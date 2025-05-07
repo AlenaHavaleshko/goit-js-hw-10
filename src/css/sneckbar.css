@@ -1,0 +1,54 @@
+/* Общий стиль уведомления */
+.alert-fulfield {
+ position: fixed;
+ top: 20px;
+ right: 20px;
+ padding: 16px 24px;
+ background-color: #4caf50; /* зелёный */
+ color: white;
+ font-size: 16px;
+ border-radius: 6px;
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+ opacity: 0;
+ transform: translateY(-20px);
+ pointer-events: none;
+ transition: opacity 300ms ease, transform 300ms ease;
+ z-index: 9999;
+}
+
+/* Когда уведомление активно */
+.alert-fulfield.is-visible-success {
+ opacity: 1;
+ transform: translateY(0);
+ pointer-events: auto;
+ cursor: pointer;
+}
+
+
+/*  Червоний */
+
+/* Базовый стиль для ошибки */
+.alert-reject {
+ position: fixed;
+ top: 70px; /* чуть ниже, чтобы не перекрывала success */
+ right: 20px;
+ padding: 16px 24px;
+ background-color: #f44336; /* красный */
+ color: white;
+ font-size: 16px;
+ border-radius: 6px;
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+ opacity: 0;
+ transform: translateY(-20px);
+ pointer-events: none;
+ transition: opacity 300ms ease, transform 300ms ease;
+ z-index: 9999;
+}
+
+/* Показать ошибку */
+.alert-reject.is-visible-reject {
+ opacity: 1;
+ transform: translateY(0);
+ pointer-events: auto;
+ cursor: pointer;
+}

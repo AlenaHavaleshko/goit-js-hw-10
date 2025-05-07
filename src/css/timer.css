@@ -1,0 +1,19 @@
+.timer-btn {
+ background-color: #3f51b5; /* насыщенный синий */
+ color: white;
+ border: none;
+ padding: 10px 20px;
+ font-size: 14px;
+ border-radius: 4px;
+ cursor: pointer;
+ margin-right: 10px;
+ transition: background-color 200ms ease;
+}
+
+.timer-btn:last-child {
+ margin-right: 0;
+}
+
+.timer-btn:hover {
+ background-color: #303f9f; /* чуть темнее при наведении */
+}
