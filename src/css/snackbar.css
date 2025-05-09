@@ -1,5 +1,6 @@
 body {
  font-family: Arial, sans-serif;
+
 }
 
 .form {
@@ -7,6 +8,7 @@ body {
  border: 1px solid grey;
  padding: 20px;
  max-width: 300px;
+ margin: 0 auto;
 }
 .form-label {
  display: flex;
