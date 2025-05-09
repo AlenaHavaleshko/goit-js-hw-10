@@ -6,38 +6,43 @@
     <title>Document</title>
     <script type="module" crossorigin src="/goit-js-hw-10/1-timer.js"></script>
     <link rel="modulepreload" crossorigin href="/goit-js-hw-10/assets/modulepreload-polyfill-B5Qt9EMX.js">
-    <link rel="stylesheet" crossorigin href="/goit-js-hw-10/assets/1-timer-B46AwpUB.css">
-    <link rel="stylesheet" crossorigin href="/goit-js-hw-10/assets/styles-CaD6sMNw.css">
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-10/assets/vendor-BbbuE1sJ.js">
+    <link rel="stylesheet" crossorigin href="/goit-js-hw-10/assets/vendor-CZjNVMTf.css">
+    <link rel="stylesheet" crossorigin href="/goit-js-hw-10/assets/1-timer-D0nr8l7x.css">
+    <link rel="stylesheet" crossorigin href="/goit-js-hw-10/assets/styles-DSxrOu0u.css">
   </head>
   <body>
     <a class="back-link" href="./index.html">Go back</a>
 
-    <input type="text" id="datetime-picker" />
-    <button type="button" data-start>Start</button>
+    <div class="wrapper">
+      <input
+        type="text"
+        id="datetime-picker"
+        ref="datepicker"
+        placeholder="Обери дату"
+      />
+      <button type="button" data-start>Start</button>
 
-    <div class="timer">
-      <div class="field">
-        <span class="value" data-days>00</span>
-        <span class="label"> Days </span>
+      <div class="timer">
+        <div class="field">
+          <span class="value" data-days>00</span>
+          <span class="label"> Days </span>
+        </div>
+
+        <div class="field">
+          <span class="value" data-hours>00</span>
+          <span class="label">Hours</span>
+        </div>
+        <div class="field">
+          <span class="value" data-minutes>00</span>
+          <span class="label"> Minutes </span>
+        </div>
+        <div class="field">
+          <span class="value" data-seconds>00</span>
+          <span class="label">Seconds</span>
+        </div>
       </div>
-      <div class="field"><span class="value" data-hours>Hours</span></div>
-      <div class="field">
-        <span class="value" data-minutes>00</span>
-        <span class="label"> Minutes </span>
-      </div>
-      <div class="field"><span class="value" data-second>Seconds</span></div>
     </div>
-
-
-
-    <div class="timer">
-     <p class="clockface js-clockface"></p>
-   
-     <div class="actions">
-       <button class="timer-btn" data-action-start>Запустить</button>
-       <button class="timer-btn" data-action-stop>Остановить</button>
-     </div>
-   </div>
 
   </body>
 </html>
