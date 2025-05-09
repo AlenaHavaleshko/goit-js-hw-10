@@ -1,158 +1,92 @@
 
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
 import '../css/styles.css';
 
-// setTimeout
-// const logger = time => {
-//   console.log(`Лог через ${time} мс, потому что не отенили тайм аут`)
-// };
+const startBtn = document.querySelector('button[data-start]');
+const daysEl = document.querySelector('[data-days]');
+const hoursEl = document.querySelector('[data-hours]');
+const minutesEl = document.querySelector('[data-minutes]');
+const secondsEl = document.querySelector('[data-seconds]');
 
-// const timerId = setTimeout(logger, 2000, 2000);
+let userSelectedDate = null;
+let intervalId = null;
 
-// console.log(timerId);
+startBtn.disabled = true;
 
-// const shouldCanselTimer = Math.random() > 0.3;
-// console.log(shouldCanselTimer);
+const options = {
+  dateFormat: "Y-m-d",
+  enableTime: true,         // Enables time picker
+  time_24hr: true,          // Displays time picker in 24 hour mode without AM/PM selection when enabled.
+  defaultDate: new Date(),  // Sets the initial selected date(s).
+  minuteIncrement: 1,       // Adjusts the step for the minute input (incl. scrolling)
+  onClose(selectedDates) {
 
-// if(shouldCanselTimer) {
-//   clearTimeout(timerId);
-// }
+    const selected = selectedDates[0];
 
-// // setInterval
-// const logger = time => {
-//   console.log(`Лог каждые ${time} мс - ${Date.now()}`)
-// };
-
-// const intervalId = setInterval(logger, 2000, 2000);
-
-// console.log(intervalId);
-
-// const shouldCanselInterval = Math.random() > 0.3;
-// console.log(shouldCanselInterval);
-
-// if(shouldCanselInterval) {
-//   clearInterval(intervalId);
-// }
-
-//------------------------------------------
-// const date1 = new Date();
-// console.log('date1', date1);
-
-
-// setTimeout(() => {
-//   const date2 = new Date();
-
-//   console.log('date1', date1);
-//   console.log('date2', date2);
-
-//   console.log(date2 - date1)
-// }, 3000);
-
-//------------------------------------------
-
-const refs = {
-  startBtn: document.querySelector('button[data-action-start]'),
-  stopBtn: document.querySelector('button[data-action-stop]'),
-  clockface: document.querySelector('.js-clockface'),
-}
-
-class Timer {
-  constructor({onTick}) {
-    this.intervalId = null;
-    this.isActive = false;
-    this.onTick = onTick;
-  }
-  start() {
-    if(this.isActive) {
-      return;
+    if (selected <= new Date()) {
+      iziToast.warning({
+        title: '!!!',
+        message: 'Please, choose a date in the future',
+        position: 'topRight'
+      });
+      startBtn.disabled = true;
+    } else {
+      userSelectedDate = selected;
+      startBtn.disabled = false;
     }
-    const startTime = Date.now();
-    this.isActive = true;
-
-    this.intervalId = setInterval(() => {
-      const currentTime = Date.now();
-      const deltaTime = currentTime - startTime;
-      const time = getTimeComponents(deltaTime);
-  
-     this.onTick(time);
-    }, 1000);
   }
+};
 
-  stop() {
-    clearInterval(this.intervalId);
-    this.isActive = false;
-  }
+flatpickr("#datetime-picker", options);              // з бібліотеки flatpickr
+
+startBtn.addEventListener('click', onButtonClick);   // вішаю прослуховувач події на кнопку
+
+function onButtonClick() {                           // при натисканні на кнопку старт
+
+  intervalId = setInterval(() => {
+    const diffMS = userSelectedDate - new Date();    // різниця обраної дати і карент дати
+    if (diffMS <= 0) {
+      clearInterval(intervalId);
+      iziToast.success({
+        title: '✔',
+        message: 'Time is up!',
+        position: 'topRight',
+      });
+      return;                                        // зупиняю виконання коду,щоб не ішло у -
+    }
+
+    const timeObj = convertMs(diffMS);
+    updateClock(timeObj);
+
+  }, 1000);
+
+  startBtn.disabled = true;
 }
 
+function updateClock({ days, hours, minutes, seconds }) {
+  let d = daysEl.textContent = days.toString().padStart(2, '0');  // Add 0 before
+  let h = hoursEl.textContent = hours.toString().padStart(2, '0');
+  let m = minutesEl.textContent = minutes.toString().padStart(2, '0');
+  let s = secondsEl.textContent = seconds.toString().padStart(2, '0');
 
-// timer
-
-const timer = new Timer({
-  onTick: updateClockface,
-});
-// const timer = {
-//   intervalId: null,
-//   isActive: false,
-//   start() {
-//     if(this.isActive) {
-//       return;
-//     }
-//     const startTime = Date.now();
-//     this.isActive = true;
-
-//     this.intervalId = setInterval(() => {
-//       const currentTime = Date.now();
-//       const deltaTime = currentTime - startTime;
-//       const time = getTimeComponents(deltaTime);
-  
-//       updateClockface(time);
-//      // console.log(`${hours}::${mins}::${secs}`);
-//     }, 1000);
-//   },
-//   stop() {
-//     clearInterval(this.intervalId);
-//     this.isActive = false;
-//   },
-// };
-
-// запуск
-refs.startBtn.addEventListener('click', timer.start.bind(timer));
-
-// стоп
-refs.stopBtn.addEventListener('click', timer.stop.bind(timer));
-
-
-
-// Приймають час у мідісекундах
-// Рахують скільки в них вміщається годин/хвилин/секунд
-// Малює інтерфейс
-
-function updateClockface({ hours, mins, secs }) {
-  refs.clockface.textContent = `${hours}:${mins}:${secs}`;
+  return `${d}:${h}:${m}:${s}`;
 }
 
-// Приймаэ числа, перетворює в строку і додає на початок 0
-//  якщо число меньше 2х знаков 
-function pad(value) {
-  return String(value).padStart(2, '0');
+function convertMs(ms) {
+  // Number of milliseconds per unit of time 
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+
+  const days = Math.floor(ms / day);                                         // Remaining days 
+  const hours = Math.floor((ms % day) / hour);                             // Remaining hours 
+  const minutes = Math.floor(((ms % day) % hour) / minute);               // Remaining minutes 
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);   // Remaining seconds 
+
+  return { days, hours, minutes, seconds };
 }
-
-// Принимает время в миллисекундах
-// Вычисляет сколько в них вмещается часов/минут/секунд
-// Возвращает объект со свойствами hours, mins, secs
-// Адская копипаста со стека 💩
-
-function getTimeComponents(time) {
-  const hours = pad(
-    Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  );
-  const mins = pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
-  const secs = pad(Math.floor((time % (1000 * 60)) / 1000));
-
-  return { hours, mins, secs };
-}
-
-
-
-
-
-

@@ -1,74 +1,42 @@
-import '../css/styles.css';
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
 
-const NOTIFICATION_DELAY_SUCCESS = 3000;
-const NOTIFICATION_DELAY_REJECT = 6000;
-let timeoutId = null;
+const form = document.querySelector('.form');
 
-const refs = {
-  notificationSuccess: document.querySelector('.js-alert-fulfield'),
-  notificationReject: document.querySelector('.js-alert-rejected'),
-}
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const delay = Number(e.target.elements.delay.value);
+  const isSuccessful = e.target.elements.isActive.value === 'fulfilled';
 
-refs.notificationSuccess.addEventListener('click', onNatificationClick);
-refs.notificationReject.addEventListener('click', onNatificationClick);
+  const promise = createPromise(delay, isSuccessful);
 
-showNotificationSuccess();
-showNotificationReject();
-
-// Functions
-
-function onNatificationClick() {
-  hideNotificationSuccess();
-  clearInterval(timeoutId);
-};
-
-// Success
-function showNotificationSuccess() {
-  refs.notificationSuccess.classList.add('is-visible-success');
- // refs.notificationReject,classList.add('is-visible');
-
- timeoutId = setTimeout(() => {
-    console.log('Закриваем алерт автоматически,чтобы не висел');
-    hideNotificationSuccess();
-  }, NOTIFICATION_DELAY_SUCCESS);
-}
-
-// Reject
-function showNotificationReject() {
-  refs.notificationReject.classList.add('is-visible-reject');
-
- timeoutId = setTimeout(() => {
-    console.log('Закриваем алерт автоматически,чтобы не висел');
-    hideNotificationReject();
-  }, NOTIFICATION_DELAY_REJECT);
-}
-
-// hide notification
-function hideNotificationSuccess() {
-  refs.notificationSuccess.classList.remove('is-visible-success');
-}
-
-function hideNotificationReject() {
-  refs.notificationReject.classList.remove('is-visible-reject');
-}
-
-
-
-
-
-
-const PROMPT_DELAY = 1000;
-const MAX_PROMPT_ATTEMPTS = 3;
-
-let promptCounter = 0;
-let hasSubscribed = true;
-
- const intervalId = setInterval(() => {
-  if( promptCounter === MAX_PROMPT_ATTEMPTS || hasSubscribed) {
-    console.log('Нужно остановить интервал');
-    clearInterval(intervalId);
-    return
+  function createPromise(delay, isSuccessful) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (isSuccessful) {
+          resolve({ delay });
+        } else {
+          reject({ delay });
+        }
+      }, delay);
+    });
   }
-  console.log('Подпишись на рассылку! - ' + Date.now());
-  promptCounter += 1
-}, PROMPT_DELAY);
+
+  promise
+    .then(({ delay }) => {
+      iziToast.success({
+        title: 'OK',
+        message: `✅ Fulfilled promise in ${delay} ms`,
+        position: 'topRight',
+      });
+    }
+    )
+    .catch(({ delay }) => {
+      iziToast.error({
+        title: 'Error',
+        message: `❌ Rejected promise in ${delay} ms`,
+        position: 'topRight',
+      });
+    });
+  form.reset();
+});
