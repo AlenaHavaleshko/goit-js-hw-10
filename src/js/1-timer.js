@@ -55,6 +55,7 @@ function onButtonClick() {                           // при натискан�
         message: 'Time is up!',
         position: 'topRight',
       });
+      startBtn.disabled = false;
       return;                                        // зупиняю виконання коду,щоб не ішло у -
     }
 
